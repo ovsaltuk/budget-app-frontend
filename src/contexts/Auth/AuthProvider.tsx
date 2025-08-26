@@ -1,12 +1,13 @@
 import React, { useState, useEffect, type ReactNode } from 'react';
-import { AuthContext, type AuthContextType, type User } from './AuthContext';
+import { AuthContext, type AuthContextType } from './AuthContext';
+import type { IUser } from '../../types/user';
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<IUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -23,7 +24,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(false);
   }, []);
 
-  const login = (newToken: string, newUser: User) => {
+  const login = (newToken: string, newUser: IUser) => {
     setToken(newToken);
     setUser(newUser);
     localStorage.setItem('token', newToken);

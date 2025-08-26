@@ -1,6 +1,6 @@
 import { useAuth } from "../hooks/useAuth";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "./Login/Login";
+import Login from "./Auth/Login";
 import Register from "./Register/Register";
 import Dashboard from "./Dashboard/Dashboard";
 
