@@ -5,14 +5,16 @@ import { authService } from '../../services/authService';
 import { useAuth } from '../../hooks/useAuth';
 import { getErrorMessage } from '../../types/api';
 
-const Login: React.FC = () => {
+const Register: React.FC = () => {
   const [formData, setFormData] = useState({
+    email: '',
     login: '',
     password: '',
+    confirmPassword: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
-
+  
   const { login } = useAuth();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,28 +23,35 @@ const Login: React.FC = () => {
       ...prev,
       [name]: value
     }));
-    // Очищаем ошибку при изменении поля
     if (error) setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Валидация паролей
+    if (formData.password !== formData.confirmPassword) {
+      setError('Пароли не совпадают');
+      return;
+    }
+
     setIsLoading(true);
     setError('');
 
     try {
-      // Вызываем API сервис
-      const response = await authService.login(formData);
-
-      // Сохраняем данные в контекст аутентификации
+      const response = await authService.register({
+        email: formData.email,
+        login: formData.login,
+        password: formData.password
+      });
+      
       login(response.token, response.user);
-
-      console.log('Успешный вход:', response);
-
+      console.log('Успешная регистрация:', response);
+      
     } catch (err: unknown) {
       const errorMessage = getErrorMessage(err);
       setError(errorMessage);
-      console.error('Ошибка входа:', err);
+      console.error('Ошибка регистрации:', err);
     } finally {
       setIsLoading(false);
     }
@@ -67,21 +76,33 @@ const Login: React.FC = () => {
         }}
       >
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          Вход в систему
+          Регистрация
         </Typography>
 
-        {/* Показываем ошибку если есть */}
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
         )}
-
+        
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <TextField
             fullWidth
+            name="email"
+            type="email"
+            label="Email"
+            value={formData.email}
+            onChange={handleInputChange}
+            margin="normal"
+            variant="outlined"
+            required
+            disabled={isLoading}
+          />
+          
+          <TextField
+            fullWidth
             name="login"
-            label="Email или логин"
+            label="Логин"
             value={formData.login}
             onChange={handleInputChange}
             margin="normal"
@@ -89,7 +110,7 @@ const Login: React.FC = () => {
             required
             disabled={isLoading}
           />
-
+          
           <TextField
             fullWidth
             name="password"
@@ -102,7 +123,20 @@ const Login: React.FC = () => {
             required
             disabled={isLoading}
           />
-
+          
+          <TextField
+            fullWidth
+            name="confirmPassword"
+            label="Подтвердите пароль"
+            type="password"
+            value={formData.confirmPassword}
+            onChange={handleInputChange}
+            margin="normal"
+            variant="outlined"
+            required
+            disabled={isLoading}
+          />
+          
           <Button
             type="submit"
             fullWidth
@@ -111,11 +145,12 @@ const Login: React.FC = () => {
             disabled={isLoading}
             sx={{ mt: 3 }}
           >
-            {isLoading ? 'Загрузка...' : 'Войти'}
+            {isLoading ? 'Регистрация...' : 'Зарегистрироваться'}
           </Button>
+
           <Box sx={{ textAlign: 'center', mt: 2 }}>
-            <Link component={RouterLink} to="/register" variant="body2">
-              Регистрация
+            <Link component={RouterLink} to="/login" variant="body2">
+              Уже есть аккаунт? Войти
             </Link>
           </Box>
         </Box>
@@ -124,4 +159,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Register;
