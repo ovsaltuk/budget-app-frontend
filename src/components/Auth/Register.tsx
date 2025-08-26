@@ -64,18 +64,18 @@ const Register: React.FC = () => {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        padding: 2,
+        p: {xs: 1, sm:2}
       }}
     >
       <Paper
         elevation={3}
         sx={{
-          padding: 4,
+          p:{ xs: 2, sm: 4},
           width: '100%',
           maxWidth: 400,
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom align="center">
+        <Typography variant="h4" component="h1" gutterBottom align="center" sx={{fontSize: {xs: '1.5rem', sm: '2rem'}}}>
           Регистрация
         </Typography>
 
@@ -85,7 +85,7 @@ const Register: React.FC = () => {
           </Alert>
         )}
         
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box component="form" onSubmit={handleSubmit}>
           <TextField
             fullWidth
             name="email"
@@ -93,7 +93,7 @@ const Register: React.FC = () => {
             label="Email"
             value={formData.email}
             onChange={handleInputChange}
-            margin="normal"
+            margin="dense"
             variant="outlined"
             required
             disabled={isLoading}
@@ -105,7 +105,7 @@ const Register: React.FC = () => {
             label="Логин"
             value={formData.login}
             onChange={handleInputChange}
-            margin="normal"
+            margin="dense"
             variant="outlined"
             required
             disabled={isLoading}
@@ -118,7 +118,7 @@ const Register: React.FC = () => {
             type="password"
             value={formData.password}
             onChange={handleInputChange}
-            margin="normal"
+            margin="dense"
             variant="outlined"
             required
             disabled={isLoading}
@@ -131,7 +131,7 @@ const Register: React.FC = () => {
             type="password"
             value={formData.confirmPassword}
             onChange={handleInputChange}
-            margin="normal"
+            margin="dense"
             variant="outlined"
             required
             disabled={isLoading}

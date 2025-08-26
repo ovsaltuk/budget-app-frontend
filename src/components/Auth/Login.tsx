@@ -55,18 +55,18 @@ const Login: React.FC = () => {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        padding: 2,
+        p: {xs: 1, sm:2}
       }}
     >
       <Paper
         elevation={3}
         sx={{
-          padding: 4,
+          p:{ xs: 2, sm: 4},
           width: '100%',
           maxWidth: 400,
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom align="center">
+        <Typography variant="h4" component="h1" gutterBottom align="center" sx={{fontSize: {xs: '1.5rem', sm: '2rem'}}}>
           Вход в систему
         </Typography>
 
@@ -77,7 +77,7 @@ const Login: React.FC = () => {
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box component="form" onSubmit={handleSubmit}>
           <TextField
             fullWidth
             name="login"
