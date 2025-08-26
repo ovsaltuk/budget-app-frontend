@@ -1,7 +1,7 @@
 import { useAuth } from "../hooks/useAuth";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./Auth/Login";
-import Register from "./Register/Register";
+import Register from "./Auth/Register";
 import Dashboard from "./Dashboard/Dashboard";
 
 const AppRouter = () => {

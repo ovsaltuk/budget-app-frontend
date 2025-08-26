@@ -15,6 +15,12 @@ export interface ApiResponseError {
   };
 }
 
+export interface IRegisterData {
+  email: string;
+  login: string;
+  password: string;
+}
+
 // Type guard для проверки типа ошибки
 export function isApiResponseError(error: unknown): error is ApiResponseError {
   return (
