@@ -11,10 +11,12 @@ import {
 } from '@mui/material';
 import { useAuth } from '../../hooks/useAuth';
 import { useTransactions } from '../../hooks/useTransactions';
+import TransactionList from '../Transactions/TransactionsList';
+import AddTransactionForm from '../Transactions/AddTransactionForm';
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
-  const { transactions, isLoading } = useTransactions();
+  const { transactions, isLoading, loadTransactions } = useTransactions();
 
   // Расчет статистики
   const calculateStats = () => {
@@ -43,7 +45,11 @@ const Dashboard: React.FC = () => {
 
   const { totalIncome, totalExpense, balance, transactionCount } = calculateStats();
 
-    // Форматирование чисел в рублях
+  const updateTransactions = () => {
+    loadTransactions(); // Перезагружаем список транзакций
+  };
+
+  // Форматирование чисел в рублях
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('ru-RU', {
       style: 'currency',
@@ -52,7 +58,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth={false} sx={{ mt: 4, mb: 4 }}>
       {/* Заголовок и кнопка выхода */}
       <Box sx={{
         display: 'flex',
@@ -141,17 +147,12 @@ const Dashboard: React.FC = () => {
       <Paper
         elevation={2}
         sx={{
-          p: 4,
           textAlign: 'center',
           backgroundColor: 'grey.50'
         }}
       >
-        <Typography variant="h6" gutterBottom color="textSecondary">
-          📊 Здесь будет ваша финансовая статистика
-        </Typography>
-        <Typography variant="body1" color="textSecondary">
-          Скоро здесь появятся графики, последние транзакции и многое другое!
-        </Typography>
+        <AddTransactionForm onSuccess={updateTransactions}/>
+        <TransactionList transactions={transactions} onDelete={updateTransactions}/>
       </Paper>
     </Container>
   );
