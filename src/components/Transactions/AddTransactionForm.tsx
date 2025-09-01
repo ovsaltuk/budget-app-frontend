@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Paper,
-  Typography,
   TextField,
   Button,
   MenuItem,
@@ -80,10 +78,7 @@ const AddTransactionForm: React.FC<IAddTransactionFormProps> = ({ onSuccess }) =
   };
 
   return (
-    <Paper elevation={2} sx={{ p: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        Добавить транзакцию
-      </Typography>
+    <Box pt={2}>
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -93,7 +88,7 @@ const AddTransactionForm: React.FC<IAddTransactionFormProps> = ({ onSuccess }) =
 
       <Box component="form" onSubmit={handleSubmit}>
         <Grid container spacing={2}>
-          <Grid size={{sm: 6, xs: 12}}>
+          <Grid size={12}>
             <TextField
               select
               fullWidth
@@ -108,7 +103,7 @@ const AddTransactionForm: React.FC<IAddTransactionFormProps> = ({ onSuccess }) =
             </TextField>
           </Grid>
 
-          <Grid size={{sm: 6, xs: 12}}>
+          <Grid size={12}>
             <TextField
               fullWidth
               name="amount"
@@ -117,11 +112,10 @@ const AddTransactionForm: React.FC<IAddTransactionFormProps> = ({ onSuccess }) =
               value={formData.amount}
               onChange={handleInputChange}
               required
-              inputProps={{ step: "0.01", min: "0.01" }}
             />
           </Grid>
 
-          <Grid size={{sm: 6, xs: 12}}>
+          <Grid size={12}>
             <TextField
               fullWidth
               name="date"
@@ -130,13 +124,10 @@ const AddTransactionForm: React.FC<IAddTransactionFormProps> = ({ onSuccess }) =
               value={formData.date}
               onChange={handleInputChange}
               required
-              InputLabelProps={{
-                shrink: true,
-              }}
             />
           </Grid>
 
-          <Grid size={{sm: 6, xs: 12}}>
+          <Grid size={12}>
             <TextField
               select
               fullWidth
@@ -154,7 +145,7 @@ const AddTransactionForm: React.FC<IAddTransactionFormProps> = ({ onSuccess }) =
             </TextField>
           </Grid>
 
-          <Grid size={{sm: 6, xs: 12}}>
+          <Grid size={12}>
             <TextField
               fullWidth
               name="subcategory"
@@ -164,7 +155,7 @@ const AddTransactionForm: React.FC<IAddTransactionFormProps> = ({ onSuccess }) =
             />
           </Grid>
 
-          <Grid size={{sm: 6, xs: 12}}>
+          <Grid size={12}>
             <TextField
               fullWidth
               name="description"
@@ -189,7 +180,7 @@ const AddTransactionForm: React.FC<IAddTransactionFormProps> = ({ onSuccess }) =
           </Grid>
         </Grid>
       </Box>
-    </Paper>
+    </Box>
   );
 };
 

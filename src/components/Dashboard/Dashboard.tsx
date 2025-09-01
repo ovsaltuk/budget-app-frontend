@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -12,11 +12,13 @@ import {
 import { useAuth } from '../../hooks/useAuth';
 import { useTransactions } from '../../hooks/useTransactions';
 import TransactionList from '../Transactions/TransactionsList';
-import AddTransactionForm from '../Transactions/AddTransactionForm';
+import AddTransactionModal from '../Transactions/AddTransactionModal';
+import AddIcon from '@mui/icons-material/Add';
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const { transactions, isLoading, loadTransactions } = useTransactions();
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   // Расчет статистики
   const calculateStats = () => {
@@ -143,7 +145,10 @@ const Dashboard: React.FC = () => {
           </Box>
         </Grid>
       </Grid>
-      {/* Заглушка для будущего контента */}
+      <Box mb={2}>
+        <Button variant="contained" color="success" onClick={() => setIsModalOpen(true)} startIcon={<AddIcon />}>Добавить</Button>
+      </Box>
+
       <Paper
         elevation={2}
         sx={{
@@ -151,9 +156,9 @@ const Dashboard: React.FC = () => {
           backgroundColor: 'grey.50'
         }}
       >
-        <AddTransactionForm onSuccess={updateTransactions}/>
-        <TransactionList transactions={transactions} onDelete={updateTransactions}/>
+        <TransactionList transactions={transactions} onDelete={updateTransactions} />
       </Paper>
+      <AddTransactionModal open={isModalOpen} onClose={() => { updateTransactions(); setIsModalOpen(false) }} />
     </Container>
   );
 };
