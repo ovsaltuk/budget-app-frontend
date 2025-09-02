@@ -14,11 +14,18 @@ import { useTransactions } from '../../hooks/useTransactions';
 import TransactionList from '../Transactions/TransactionsList';
 import AddTransactionModal from '../Transactions/AddTransactionModal';
 import AddIcon from '@mui/icons-material/Add';
+import ExcelImport from '../Transactions/ExcelImport';
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
-  const { transactions, isLoading, loadTransactions } = useTransactions();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const { transactions, isLoading, loadTransactions } = useTransactions();
+
+  const handleImportSuccess = () => {
+    // Принудительно перезагружаем транзакции
+    loadTransactions();
+    console.log('Транзакции успешно импортированы и данные обновлены!');
+  };
 
   // Расчет статистики
   const calculateStats = () => {
@@ -145,6 +152,9 @@ const Dashboard: React.FC = () => {
           </Box>
         </Grid>
       </Grid>
+      <Box mb={2}>
+        <ExcelImport onImportSuccess={handleImportSuccess}/>
+      </Box>
       <Box mb={2}>
         <Button variant="contained" color="success" onClick={() => setIsModalOpen(true)} startIcon={<AddIcon />}>Добавить</Button>
       </Box>
