@@ -24,7 +24,7 @@ const ExcelImport: React.FC<IExcelImportProps> = ({ onImportSuccess }) => {
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const { createTransaction, loadTransactions } = useTransactions(); // Добавляем loadTransactions
+  const { createTransactions, loadTransactions } = useTransactions();
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -45,54 +45,43 @@ const ExcelImport: React.FC<IExcelImportProps> = ({ onImportSuccess }) => {
   };
 
   const handleImport = async () => {
-    if (parsedTransactions.length === 0) return;
+  if (parsedTransactions.length === 0) return;
 
-    setIsLoading(true);
-    setError('');
+  setIsLoading(true);
+  setError('');
 
-    try {
-      let successCount = 0;
-      let errorCount = 0;
-
-      // Импортируем все транзакции
-      for (const transaction of parsedTransactions) {
-        try {
-          await createTransaction(transaction);
-          successCount++;
-        } catch (err) {
-          console.error('Error importing transaction:', transaction, err);
-          errorCount++;
-        }
-      }
-
-      // Перезагружаем список транзакций
-      await loadTransactions();
-      
-      // Вызываем callback для обновления родительского компонента
-      if (onImportSuccess) {
-        onImportSuccess();
-      }
-
-      setParsedTransactions([]);
-      setSelectedFile(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-      
-      // Показываем детальный отчет
-      if (errorCount > 0) {
-        alert(`Импорт завершен!\nУспешно: ${successCount}\nС ошибками: ${errorCount}`);
-      } else {
-        alert(`Успешно импортировано ${successCount} транзакций!`);
-      }
-      
-    } catch (err: any) {
-      setError('Ошибка при импорте транзакций');
-      console.error('Import error:', err);
-    } finally {
-      setIsLoading(false);
+  try {
+    console.log('Starting bulk import of:', parsedTransactions.length, 'transactions');
+    console.log('First transaction sample:', parsedTransactions[0]);
+    
+    const newTransactions = await createTransactions(parsedTransactions);
+    
+    console.log('Bulk import successful:', newTransactions.length, 'transactions created');
+    
+    await loadTransactions();
+    
+    if (onImportSuccess) {
+      onImportSuccess();
     }
-  };
+
+    setParsedTransactions([]);
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    
+    alert(`Успешно импортировано ${newTransactions.length} транзакций!`);
+    
+  } catch (err: any) {
+    console.error('Full import error:', err);
+    console.error('Error response:', err.response);
+    
+    const errorMessage = err.response?.data?.message || err.message || 'Ошибка при импорте транзакций';
+    setError(errorMessage);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleDownloadTemplate = () => {
     ExcelImportService.downloadTemplate();
@@ -169,7 +158,7 @@ const ExcelImport: React.FC<IExcelImportProps> = ({ onImportSuccess }) => {
           <Typography variant="subtitle1" gutterBottom>
             Найдено транзакций: {parsedTransactions.length}
           </Typography>
-          
+
           <List dense sx={{ maxHeight: 200, overflow: 'auto', mb: 2 }}>
             {parsedTransactions.slice(0, 5).map((transaction, index) => (
               <ListItem key={index}>
