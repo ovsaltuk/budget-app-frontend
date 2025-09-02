@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { transactionService } from '../services/transactionService';
-import type { ITransaction, ITransactionFilters } from '../types/transactions';
+import type { ICreateTransactionData, ITransaction, ITransactionFilters } from '../types/transactions';
 
 export const useTransactions = (filters?: ITransactionFilters) => {
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>('');
+  const [updateTrigger, setUpdateTrigger] = useState(0); // Добавляем updateTrigger
 
-  // useCallback для стабильной ссылки на функцию
   const loadTransactions = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -20,19 +20,33 @@ export const useTransactions = (filters?: ITransactionFilters) => {
     } finally {
       setIsLoading(false);
     }
-  }, [filters]); // Добавляем filters в зависимости
+  }, [filters]);
 
   useEffect(() => {
     loadTransactions();
-  }, [loadTransactions]); // Теперь используем loadTransactions в зависимостях
+  }, [loadTransactions, updateTrigger]); // Добавляем updateTrigger в зависимости
 
   const createTransaction = async (data: Omit<ITransaction, 'id' | 'createdAt' | 'updatedAt' | 'userId'>) => {
     try {
       const newTransaction = await transactionService.createTransaction(data);
       setTransactions(prev => [newTransaction, ...prev]);
+      setUpdateTrigger(prev => prev + 1); // Обновляем триггер
       return newTransaction;
     } catch (err) {
       console.error('Error creating transaction:', err);
+      throw err;
+    }
+  };
+
+  const createTransactions = async (data: ICreateTransactionData[]) => {
+    try {
+      console.log(data);
+      const newTransactions = await transactionService.createTransactions(data);
+      setTransactions(prev => [...newTransactions, ...prev]);
+      setUpdateTrigger(prev => prev + 1); // Обновляем триггер
+      return newTransactions;
+    } catch (err) {
+      console.error('Error creating transactions1:', err);
       throw err;
     }
   };
@@ -41,6 +55,7 @@ export const useTransactions = (filters?: ITransactionFilters) => {
     try {
       await transactionService.deleteTransaction(id);
       setTransactions(prev => prev.filter(t => t.id !== id));
+      setUpdateTrigger(prev => prev + 1); // Обновляем триггер
     } catch (err) {
       console.error('Error deleting transaction:', err);
       throw err;
@@ -53,6 +68,7 @@ export const useTransactions = (filters?: ITransactionFilters) => {
     error,
     loadTransactions,
     createTransaction,
+    createTransactions,
     deleteTransaction,
   };
 };
