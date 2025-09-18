@@ -62,6 +62,15 @@ export const useTransactions = (filters?: ITransactionFilters) => {
     }
   };
 
+  const deleteTransactions = async (ids: number []) => {
+    try {
+      await transactionService.deleteTransactions(ids);
+    } catch (err) {
+      console.log('Error deleting transactions: ', err)
+      throw err;
+    }
+  }
+
   return {
     transactions,
     isLoading,
@@ -70,5 +79,6 @@ export const useTransactions = (filters?: ITransactionFilters) => {
     createTransaction,
     createTransactions,
     deleteTransaction,
+    deleteTransactions
   };
 };
