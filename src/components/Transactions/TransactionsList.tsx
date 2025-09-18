@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Typography,
@@ -10,7 +10,8 @@ import {
     TableHead,
     TableRow,
     Chip,
-    IconButton
+    IconButton,
+    Checkbox
 } from '@mui/material';
 import { useTransactions } from '../../hooks/useTransactions';
 import type { ITransaction } from '../../types/transactions';
@@ -22,7 +23,10 @@ interface ITransactionListProps {
 }
 
 const TransactionList: React.FC<ITransactionListProps> = ({ transactions, onDelete }) => {
-    const { deleteTransaction } = useTransactions();
+    const { deleteTransaction, deleteTransactions } = useTransactions();
+    const [selected, setSelected] = useState<number[]>([]);
+
+    useEffect(()=>{}, [selected])
 
     const handleDelete = async (id: number) => {
         if (window.confirm('Вы уверены, что хотите удалить эту транзакцию?')) {
@@ -35,6 +39,37 @@ const TransactionList: React.FC<ITransactionListProps> = ({ transactions, onDele
             }
         }
     };
+
+    const handleDeleteMultiple = async (ids: number[]) => {
+        if (window.confirm('Вы уверены, что хотите удалить эту транзакции?')) {
+            try {
+                await deleteTransactions(ids);
+                setSelected([]);
+            } catch (error) {
+                console.error('Ошибка при удалении транзакций:', error)
+            } finally {
+                onDelete?.();
+            }
+        }
+    }
+
+    // Обработчик выбора/снятия выбора отдельного элемента
+    const handleSelect = (id: number) => {
+        if (selected.includes(id)) {
+            setSelected(selected.filter(item => item !== id));
+        } else {
+            setSelected([...selected, id]);
+        }
+    };
+
+    const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.checked) {
+            setSelected(transactions.map(transaction => transaction.id));
+        } else {
+            setSelected([]);
+        }
+    };
+
 
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('ru-RU', {
@@ -62,12 +97,19 @@ const TransactionList: React.FC<ITransactionListProps> = ({ transactions, onDele
             <Table sx={{ minWidth: 650 }} aria-label="таблица транзакций">
                 <TableHead>
                     <TableRow>
-                        <TableCell>Дата</TableCell>
-                        <TableCell>Тип</TableCell>
-                        <TableCell>Категория</TableCell>
+                        <TableCell width={110}>Дата</TableCell>
+                        <TableCell width={110}>Тип</TableCell>
+                        <TableCell width={200}>Категория</TableCell>
                         <TableCell>Описание</TableCell>
-                        <TableCell align="right">Сумма</TableCell>
-                        <TableCell align="center">Действия</TableCell>
+                        <TableCell align="center" width={150}>Сумма</TableCell>
+                        <TableCell align="center" width={110}>Действия</TableCell>
+                        <TableCell align="center" width={110}>
+                            <Checkbox onChange={handleSelectAll}/>
+                            <IconButton size="small" onClick = {() => { handleDeleteMultiple(selected)}}>
+                                <DeleteForeverIcon />
+                            </IconButton>
+                        </TableCell>
+
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -95,14 +137,14 @@ const TransactionList: React.FC<ITransactionListProps> = ({ transactions, onDele
                             <TableCell>
                                 {transaction.description || '-'}
                             </TableCell>
-                            <TableCell align="right">
+                            <TableCell align="center">
                                 <Chip
                                     label={formatCurrency(transaction.amount)}
                                     color={transaction.type === 'income' ? 'success' : 'error'}
                                     variant="outlined"
                                 />
                             </TableCell>
-                            <TableCell align="center">
+                            <TableCell align="center" >
                                 <IconButton
                                     size="small"
                                     onClick={() => {
@@ -112,6 +154,9 @@ const TransactionList: React.FC<ITransactionListProps> = ({ transactions, onDele
                                 >
                                     <DeleteForeverIcon />
                                 </IconButton>
+                            </TableCell>
+                            <TableCell align="center">
+                                <Checkbox onChange={() => handleSelect(transaction.id)} checked={selected.includes(transaction.id) ? true : false}/>
                             </TableCell>
                         </TableRow>
                     ))}

@@ -35,6 +35,19 @@ export const transactionService = {
     await api.delete(`/transactions/${id}`);
   },
 
+  // Массовое удаление транзакций
+  deleteTransactions: async (ids: number[]): Promise<void> => {
+    try {
+      console.log("Deleting transactions with IDs:", ids);
+      const response = await api.post("/transactions/delete-multiple", { ids });
+      console.log("Bulk delete response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Bulk delete error:", error);
+      throw error;
+    }
+  },
+
   // Создать новую транзакцию
   createTransaction: async (
     data: ICreateTransactionData
