@@ -26,7 +26,7 @@ const TransactionList: React.FC<ITransactionListProps> = ({ transactions, onDele
     const { deleteTransaction, deleteTransactions } = useTransactions();
     const [selected, setSelected] = useState<number[]>([]);
 
-    useEffect(()=>{}, [selected])
+    useEffect(() => { }, [selected])
 
     const handleDelete = async (id: number) => {
         if (window.confirm('Вы уверены, что хотите удалить эту транзакцию?')) {
@@ -97,15 +97,16 @@ const TransactionList: React.FC<ITransactionListProps> = ({ transactions, onDele
             <Table sx={{ minWidth: 650 }} aria-label="таблица транзакций">
                 <TableHead>
                     <TableRow>
-                        <TableCell width={110}>Дата</TableCell>
-                        <TableCell width={110}>Тип</TableCell>
-                        <TableCell width={200}>Категория</TableCell>
-                        <TableCell>Описание</TableCell>
+                        <TableCell width={50}>
+                            <Checkbox onChange={handleSelectAll} />
+                        </TableCell>
+                        <TableCell width={200} align='left'>Дата</TableCell>
+                        <TableCell width={200} align='left'>Тип</TableCell>
+                        <TableCell width={250} align='left'>Категория</TableCell>
+                        <TableCell align="left">Описание</TableCell>
                         <TableCell align="center" width={150}>Сумма</TableCell>
-                        <TableCell align="center" width={110}>Действия</TableCell>
                         <TableCell align="center" width={110}>
-                            <Checkbox onChange={handleSelectAll}/>
-                            <IconButton size="small" onClick = {() => { handleDeleteMultiple(selected)}}>
+                            <IconButton size="small" onClick={() => { handleDeleteMultiple(selected) }}>
                                 <DeleteForeverIcon />
                             </IconButton>
                         </TableCell>
@@ -118,6 +119,9 @@ const TransactionList: React.FC<ITransactionListProps> = ({ transactions, onDele
                             key={transaction.id}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
+                            <TableCell align="left">
+                                <Checkbox onChange={() => handleSelect(transaction.id)} checked={selected.includes(transaction.id) ? true : false} />
+                            </TableCell>
                             <TableCell>
                                 {formatDate(transaction.date)}
                             </TableCell>
@@ -155,9 +159,7 @@ const TransactionList: React.FC<ITransactionListProps> = ({ transactions, onDele
                                     <DeleteForeverIcon />
                                 </IconButton>
                             </TableCell>
-                            <TableCell align="center">
-                                <Checkbox onChange={() => handleSelect(transaction.id)} checked={selected.includes(transaction.id) ? true : false}/>
-                            </TableCell>
+
                         </TableRow>
                     ))}
                 </TableBody>
